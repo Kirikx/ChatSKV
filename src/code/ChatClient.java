@@ -27,10 +27,10 @@ public class ChatClient {
                         }
                         break;
                     }
-                    if (ois.read() > -1) {
-                        String in = ois.readUTF();
-                        System.out.println(in);
-                    }
+//                    if (ois.read() > -1) {
+//                        String in = ois.readUTF();
+//                        System.out.println(in);
+//                    }
                 }
             }
         } catch (UnknownHostException e) {
