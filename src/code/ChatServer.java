@@ -1,31 +1,48 @@
 package code;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ChatServer {
-    public static void main(String[] args) throws InterruptedException {
 
-        try (ServerSocket server = new ServerSocket(3345)) {
+    public static final int PORT = 8189;
+
+    public static void main(String[] args) {
+
+        try (ServerSocket server = new ServerSocket(PORT)) {
+            System.out.println("Сервер создан, ожидаем подключения клиента");
             Socket client = server.accept();
             System.out.println("Есть контакт!");
-            DataOutputStream out = new DataOutputStream(client.getOutputStream());
             DataInputStream in = new DataInputStream(client.getInputStream());
+            DataOutputStream out = new DataOutputStream(client.getOutputStream());
+
+            new Thread(() -> {
+                try {
+                    while (!client.isClosed()) {
+                        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                        String clientCommand = br.readLine();
+                        out.writeUTF(clientCommand);
+                        out.flush();
+                        System.out.println("Я: " + clientCommand);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
             while (!client.isClosed()) {
-                String entry = in.readUTF();
-                System.out.println("Получено сообщение: " + entry);
-                if (entry.equalsIgnoreCase("/end")) {             // Проверка на завершение коннекта
-                    out.writeUTF("ЭХО - " + entry);
+                String mes = in.readUTF();
+                System.out.println("Клиент: " + mes);
+                if (mes.equalsIgnoreCase("/end")) {             // Проверка на завершение коннекта
+                    out.writeUTF(mes);
                     out.flush();
                     break;
                 }
-              //  out.writeUTF("ЭХО - " + entry);
-                out.flush();
+//                out.writeUTF("ЭХО: " + mes);
+//                out.flush();
             }
-            System.out.println("Клиент отключился");
+            System.out.println("Клиент отключился!");
             in.close();
             out.close();
             client.close();
