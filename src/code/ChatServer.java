@@ -20,13 +20,11 @@ public class ChatServer {
             new Thread(() -> {
                 try {
                     while (!client.isClosed()) {
-                        //                   if (in.readBoolean()) {
                         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                         String clientCommand = br.readLine();
                         out.writeUTF(clientCommand);
                         out.flush();
-                        System.out.println("Отправлено сообщение: " + clientCommand);
-                        //                   }
+                        System.out.println("Я: " + clientCommand);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -34,17 +32,17 @@ public class ChatServer {
             }).start();
 
             while (!client.isClosed()) {
-                String entry = in.readUTF();
-                System.out.println("Получено сообщение: " + entry);
-//                if (entry.equalsIgnoreCase("/end")) {             // Проверка на завершение коннекта
-//                    out.writeUTF("ЭХО - " + entry);
-//                    out.flush();
-//                    break;
-//                }
-//                out.writeUTF("ЭХО - " + entry);
+                String mes = in.readUTF();
+                System.out.println("Клиент: " + mes);
+                if (mes.equalsIgnoreCase("/end")) {             // Проверка на завершение коннекта
+                    out.writeUTF(mes);
+                    out.flush();
+                    break;
+                }
+//                out.writeUTF("ЭХО: " + mes);
 //                out.flush();
             }
-            System.out.println("Клиент отключился");
+            System.out.println("Клиент отключился!");
             in.close();
             out.close();
             client.close();
